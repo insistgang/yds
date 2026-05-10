@@ -1,0 +1,102 @@
+[
+  {
+    "id": "zenodo_accessibility_barriers",
+    "priority": 1,
+    "name": "Image Dataset of Accessibility Barriers",
+    "url": "https://zenodo.org/records/6382090",
+    "license": "CC BY 4.0",
+    "source_format": "CVAT XML + images",
+    "recommended_p0_use": [
+      "stairs",
+      "ramp"
+    ],
+    "mapping": {
+      "stairs": "stairs",
+      "ramps": "ramp",
+      "ramp": "ramp"
+    },
+    "notes": "Optional steps->stairs requires manual review."
+  },
+  {
+    "id": "mendeley_obstacles_avoidance",
+    "priority": 2,
+    "name": "Obstacles Avoidance Assistance for Visually Impaired",
+    "url": "https://data.mendeley.com/datasets/xwhnp82rhk/1",
+    "license": "CC BY 4.0",
+    "source_format": "YOLO",
+    "recommended_p0_use": [
+      "road_obstacle"
+    ],
+    "mapping": {
+      "pole": "road_obstacle",
+      "fence": "road_obstacle",
+      "bump": "road_obstacle",
+      "hole": "road_obstacle"
+    },
+    "notes": "Collapse source obstacle classes to road_obstacle after QA."
+  },
+  {
+    "id": "roboflow_tactile_paving_blind_assist",
+    "priority": 3,
+    "name": "Tactile-Paving-Blind-Assist",
+    "url": "https://universe.roboflow.com/labeling-qcirk/tactile-paving-blind-assist",
+    "license": "CC BY 4.0",
+    "source_format": "Roboflow object detection",
+    "recommended_p0_use": [
+      "blind_road_context_only"
+    ],
+    "mapping": {},
+    "notes": "Tactile paving context is not blind_road_occupied. Do not map directly."
+  },
+  {
+    "id": "roboflow_stairs_detection",
+    "priority": 4,
+    "name": "Roboflow Universe Stairs_Detection candidates",
+    "url": "https://universe.roboflow.com/stair-detection-itfjj",
+    "license": "check_each_project_version_before_use",
+    "source_format": "Roboflow object detection",
+    "recommended_p0_use": [
+      "stairs"
+    ],
+    "mapping": {
+      "stairs": "stairs",
+      "upstair": "review_optional_stairs",
+      "downstair": "review_optional_stairs"
+    },
+    "notes": "Project quality and license can vary; confirm version license before use."
+  },
+  {
+    "id": "github_obstacle_dataset_candidate",
+    "priority": 5,
+    "name": "TW0521/Obstacle-Dataset",
+    "url": "https://github.com/TW0521/Obstacle-Dataset",
+    "license": "unclear",
+    "source_format": "VOC + YOLO",
+    "recommended_p0_use": [
+      "road_obstacle_candidate_only"
+    ],
+    "mapping": {
+      "reflective_cone": "road_obstacle",
+      "warning_column": "road_obstacle",
+      "spherical_roadblock": "road_obstacle",
+      "pole": "road_obstacle",
+      "ashcan": "road_obstacle"
+    },
+    "notes": "Do not use in official baseline until license is confirmed."
+  },
+  {
+    "id": "huggingface_projectsidewalk_rampnet",
+    "priority": 6,
+    "name": "Project Sidewalk RampNet Dataset",
+    "url": "https://huggingface.co/datasets/projectsidewalk/rampnet-dataset",
+    "license": "MIT",
+    "source_format": "Hugging Face parquet",
+    "recommended_p0_use": [
+      "ramp_research_candidate"
+    ],
+    "mapping": {
+      "curb_ramp_points_normalized": "requires_custom_conversion_to_ramp"
+    },
+    "notes": "Large street-view dataset; not first priority for Jetson P0 baseline."
+  }
+]

@@ -1,0 +1,51 @@
+{
+  "source_id": "mendeley_obstacles_avoidance",
+  "source_url": "https://data.mendeley.com/datasets/xwhnp82rhk/1",
+  "doi": "10.17632/xwhnp82rhk.1",
+  "license": "CC BY 4.0",
+  "downloaded_zip": "datasets/public_p0_sources/raw/mendeley_obstacles/xwhnp82rhk-1.zip",
+  "converted_root": "datasets/public_p0_yolo",
+  "source_class_names": ["bump", "fence", "hole", "pole"],
+  "source_to_p0_mapping": {
+    "bump": "road_obstacle",
+    "fence": "road_obstacle",
+    "hole": "road_obstacle",
+    "pole": "road_obstacle"
+  },
+  "source_counts": {
+    "train": {
+      "images": 1000,
+      "label_files": 1000,
+      "boxes": 1306,
+      "bump": 397,
+      "fence": 292,
+      "hole": 329,
+      "pole": 288
+    },
+    "valid": {
+      "images": 250,
+      "label_files": 250,
+      "boxes": 321,
+      "bump": 82,
+      "fence": 76,
+      "hole": 90,
+      "pole": 73
+    }
+  },
+  "converted_counts": {
+    "train_images": 1000,
+    "train_labels": 1000,
+    "val_images": 250,
+    "val_labels": 250,
+    "test_images": 0,
+    "road_obstacle_boxes": 1627,
+    "stairs_boxes": 0,
+    "ramp_boxes": 0,
+    "blind_road_occupied_boxes": 0
+  },
+  "class_id_counts": {
+    "0": 1627
+  },
+  "non_p0_or_non_road_class_lines": 0,
+  "notes": "Public road_obstacle cold-start data only. QA and privacy review are still required before training or reporting."
+}

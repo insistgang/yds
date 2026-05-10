@@ -1,0 +1,39 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Runtime outputs and local artifacts
+runs/
+*.mp4
+*.avi
+*.mov
+
+# Model/export artifacts
+*.pt
+*.onnx
+*.engine
+
+# P0 raw dataset media: keep metadata, never commit captured images/videos.
+datasets/linkable_p0_raw/**/*.jpg
+datasets/linkable_p0_raw/**/*.jpeg
+datasets/linkable_p0_raw/**/*.png
+datasets/linkable_p0_raw/**/*.mp4
+datasets/linkable_p0_raw/**/*.avi
+!datasets/linkable_p0_raw/README.md
+!datasets/linkable_p0_raw/manifest.csv
+!datasets/linkable_p0_raw/**/.gitkeep
+!datasets/linkable_p0_raw/**/README.md
+!datasets/linkable_p0_raw/_manifests/*.csv
+
+# Derived YOLO datasets are reproducible from reviewed raw data and labels.
+datasets/linkable_p0_yolo/
+
+# Public dataset downloads/conversions can be large and must be reproducible.
+datasets/public_p0_sources/raw/*
+datasets/public_p0_sources/converted_yolo/*
+datasets/public_p0_yolo/
+!datasets/public_p0_sources/README.md
+!datasets/public_p0_sources/sources.json
+!datasets/public_p0_sources/raw/.gitkeep
+!datasets/public_p0_sources/converted_yolo/.gitkeep
+!datasets/public_p0_sources/_manifests/.gitkeep
