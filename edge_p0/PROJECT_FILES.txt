@@ -1,134 +1,60 @@
-LinkAble Edge P0 项目文件说明
-==============================
+LinkAble Edge P0 文件说明
+==========================
 
-根目录文件
+最后更新：2026-05-25
+
+本文件只保留工程入口索引。正式文案入口请优先看根目录 `DOCS_INDEX.md`。
+
+核心源码
+--------
+
+`src/linkable_edge/`
+
+- `inputs.py`：统一输入抽象，维护 CSI/USB/视频/图片序列 fallback。
+- `detector.py`：YOLO 检测器，维护 COCO 冷启动、mangdaojiance 映射和 P0 自定义模型入口。
+- `event_builder.py`：P0 事件聚合、连续帧去抖、P1 标签隔离。
+- `pipeline.py`：检测结果到语音/上报的一帧处理主链路。
+- `semantics.py`：P0/P1 模板化中文提示。
+- `audio.py` / `audio_manager.py`：MiniMax、pyttsx3、print 降级链和音频缓存。
+- `image_demo.py` / `video_demo.py` / `usb_demo.py` / `demo.py`：演示入口。
+- `publisher.py`：结构化事件输出。
+- `benchmark.py`：FPS、延迟统计。
+
+当前脚本入口
+------------
+
+`scripts/`
+
+- `capture_p0_frames.py`：现场数据采集。
+- `check_p0_dataset.py`：原始自采数据检查。
+- `prepare_public_p0_datasets.py`：公共数据转换。
+- `convert_mangdaojiance_to_p0.py`：16 类盲道数据映射到 P0 四类。
+- `merge_stairs_ramps_dataset.py`：stairs/ramp 数据集合并。
+- `resplit_dataset.py`：P0 YOLO 数据集重新划分。
+- `train_p0_model.py`：当前训练/评估/导出主入口。
+- `visualize_p0_dataset.py`：数据可视化和统计。
+- `select_poster_samples.py`：海报样例挑选。
+- `generate_all_voice_alerts.py`：语音模板批量生成。
+- `tts_minimax_test.py`：MiniMax TTS 合成测试。
+
+归档脚本
+--------
+
+`scripts/archive/`
+
+这里放一次性脚本或被主入口替代的脚本，不作为当前工作流入口。
+
+数据与产物
 ----------
 
-.gitignore              Git 版本控制忽略规则（排除 .pyc、缓存、数据集等）
-ARCHITECTURE.txt        系统架构图（ASCII 绘制，含输入层/检测层/事件层/语义层/音频层/上报层/性能基准）
-PROJECT_ANALYSIS.md     项目早期分析文档（2026-04-29，部分被 PRD v2.2 替代，留档备查）
-pyproject.toml          Python 包配置文件（包名 linkable-edge-p0，版本 0.1.0，Python>=3.10）
-README.md               项目主文档（定位、快速开始、AGENTS.md 合规表、提交材料清单）
-train_yolo.py           YOLO 训练脚本（epochs=100, imgsz=640, batch=16, AdamW 优化器）
+- `datasets/p0_yolo/`：当前融合后的 YOLO 数据集，体积较大，不进 Git。
+- `pic/`：AI/临时图片素材，体积较大，不进 Git。
+- `runs/`：训练、评估、可视化输出，不进 Git。
+- `tts_samples/` / `voice_alerts/`：音频缓存和导出音频，按演示需要保留。
 
+已清理的冗余
+------------
 
-核心目录
---------
-
-src/linkable_edge/          核心源码（17 个 Python 文件）
-    __init__.py             包初始化
-    inputs.py               统一输入抽象（CSI/USB/视频/图片 + auto_select_source fallback）
-    detector.py             YOLO 检测器（P0 四类定义、COCO 冷启动、异常降级、engine 预留）
-    event_builder.py        事件聚合（连续帧检测、去抖、优先级、P1 硬隔离）
-    pipeline.py             主链路编排（一帧一播仲裁、音频冷却、启动预加载）
-    semantics.py            中文语义生成（<50 字提示、方向/距离格式化、28 条模板）
-    audio_manager.py        音频管理（MiniMax->pyttsx3->print 降级链、全局锁、预加载）
-    audio.py                音频底层（MiniMax TTS API、缓存、播放器适配）
-    benchmark.py            性能基准（FPS/延迟采集、JSON/CSV 输出）
-    video_demo.py           视频/图片序列演示入口
-    usb_demo.py             USB 摄像头实时演示入口
-    image_demo.py           单张图片演示入口
-    demo.py                 Mock 数据演示（无摄像头，验证链路）
-    publisher.py            结构化事件上报（HTTP POST，不上传原始图像）
-    models.py               数据模型（DetectionEvent 等 dataclass）
-    camera.py               [死代码] 字符串拼接工具，未被引用，待删除
-    camera_check.py         摄像头检查工具（诊断 CSI/USB 状态）
-
-datasets/                   数据集
-    linkable_p0_raw/        自采原始数据目录
-        blind_road_occupied/images/   盲道占用（目标 210 张，当前 0 张）
-        stairs/images/                台阶（目标 120 张，当前 0 张）
-        ramp/images/                  坡道（目标 120 张，当前 0 张）
-        road_obstacle/images/         路面障碍（目标 150 张，当前 0 张）
-        negative/images/              负样本（无障碍场景）
-        rejected_privacy/             隐私审查不通过的样本
-        manifest.csv                  采集记录表
-    public_p0_sources/      公共数据源
-        sources.json                6 个候选数据集元数据
-        raw/                        未解压原始数据
-        converted_yolo/             转换后 YOLO 格式
-        _manifests/                 转换报告
-    public_p0_yolo/         YOLO 训练数据集
-        images/train/               训练集图片
-        images/val/                 验证集图片
-        images/test/                测试集图片
-        labels/train/               训练集标注
-        labels/val/                 验证集标注
-        labels/test/                测试集标注
-        data.yaml                   4 类定义文件
-
-docs/                       项目文档
-    annotation_guidelines_p0.md         P0 标注规范
-    current_phase_status.md             当前阶段状态（需修复编码）
-    dataset_build_next_steps.md         数据集构建下一步
-    demo_route_plan.md                  A-D 点位路线规划
-    demo_video_shotlist.md              演示视频分镜脚本
-    field_capture_checklist.md          现场采集清单
-    p0_data_collection_plan.md          数据采集计划
-    phase4_dryrun_report.md             Phase 4 预演报告
-    public_dataset_candidates.md        候选公开数据集
-    public_dataset_ingestion_plan.md    公共数据集导入计划
-    public_mendeley_conversion_report.md  Mendeley 转换报告
-    plans/                              执行计划
-        linkable-competition-master-checklist.md   比赛总清单
-        jetson-troubleshooting.md                   Jetson 故障排查
-        jetson-camera-diagnosis.md                  相机诊断记录
-        README.txt                                  计划文档说明
-
-scripts/                    工具脚本
-    capture_p0_frames.py                数据采集脚本（多时段多角度，生成 manifest）
-    check_p0_dataset.py                 数据集检查（统计各类别数量，目标 >=600）
-    prepare_public_p0_datasets.py       公共数据集转换（Zenodo/Mendeley -> YOLO）
-    test_mendeley_road_obstacle_dataset.py  Mendeley 数据质量验证
-    tts_minimax_test.py                 MiniMax TTS 测试（合成、比较、导出缓存）
-
-tests/                      单元测试
-    test_detector.py                    检测器测试
-    test_event_builder.py               事件聚合测试
-    test_publisher.py                   上报测试
-    test_semantics.py                   语义生成测试
-    test_tts_minimax.py                 TTS 测试
-    test_usb_demo.py                    USB 演示测试
-
-pic/                        临时图片目录
-    image_001.png ~ image_342.png       342 张 AI 生成图（待人工分类标注后移到 datasets）
-
-tts_samples/                MiniMax 音频缓存
-    speech-2.8-hd/
-        presenter_female/       默认音色（5 个场景音频）
-        female-tianmei/         备选音色
-        female-shaonv/          备选音色
-        female-yujie/           备选音色
-
-runs/                       运行输出
-    public_dataset_checks/
-        mendeley_road_obstacle/         Mendeley 数据集检查结果
-            contact_sheet.jpg           预览图汇总
-            report.json                 检查报告
-            summary.txt                 摘要
-            previews/                   单张预览图（历史文件，可清理）
-
-
-重要说明
---------
-
-1. pic/ 是临时目录，342 张 AI 生成图需要：
-   - 人工分类到 datasets/linkable_p0_raw/ 下 4 个类别目录
-   - 用 labelImg 等工具标注（生成 .txt 标注文件）
-   - 划分 train/val/test 后最终移到 public_p0_yolo/
-
-2. camera.py 是死代码（33 行字符串拼接工具，未被任何模块引用），后续可删除。
-
-3. 当前数据状态：
-   - 自采数据：0 张（目标 >=600）
-   - AI 生成图：342 张（待分类标注）
-   - 公共数据集：Zenodo ZIP 包待解压，Mendeley 声称已转换但无实际文件
-
-4. 未完成任务：
-   - AudioManager 接入 demo（当前 demo 仍用旧 build_audio_output）
-   - A-D 点位演示脚本创建
-   - 论文/PPT/展架框架搭建（不依赖实验数据，可提前启动）
-
-
-最后更新：2026-05-10
-对齐版本：PRD v2.2 / AGENTS.md
+- 删除旧 `camera.py`，CSI/USB 输入统一由 `inputs.py` 维护。
+- 删除旧 `train_yolo.py`，训练统一走 `scripts/train_p0_model.py`。
+- 归档 `train_simple.py`、历史 16 类直出推理脚本和部分一次性数据处理脚本。

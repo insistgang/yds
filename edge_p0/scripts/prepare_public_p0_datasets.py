@@ -9,10 +9,10 @@ from pathlib import Path
 
 
 P0_CLASSES = {
-    "road_obstacle": 0,
+    "blind_road_occupied": 0,
     "stairs": 1,
     "ramp": 2,
-    "blind_road_occupied": 3,
+    "road_obstacle": 3,
 }
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 

@@ -1,0 +1,60 @@
+# mangdaojianceYOLO 16类 -> P0 4类 映射配置
+# 用于将购买的16类数据集映射到LinkAble P0四类
+
+# P0 四类定义
+p0_classes:
+  - blind_road_occupied  # 盲道占用
+  - stairs               # 台阶
+  - ramp                 # 坡道
+  - road_obstacle        # 路面障碍
+
+# mangdaojianceYOLO 16类原始定义
+source_classes:
+  - blind track
+  - ashcan
+  - car
+  - bicycle
+  - person
+  - spherical_roadblock
+  - pole
+  - fire_hydrant
+  - stop_sign
+  - truck
+  - dog
+  - motorbike
+  - warning_column
+  - bus
+  - tricycle
+  - reflective_cone
+
+# 类别映射关系
+# 格式: source_class: target_class
+label_map:
+  # 直接映射 - 盲道相关
+  blind track: blind_road_occupied
+  
+  # 障碍物映射 - 所有可能阻碍通行的物体
+  ashcan: road_obstacle
+  car: road_obstacle
+  bicycle: road_obstacle
+  person: road_obstacle
+  spherical_roadblock: road_obstacle
+  pole: road_obstacle
+  fire_hydrant: road_obstacle
+  truck: road_obstacle
+  dog: road_obstacle
+  motorbike: road_obstacle
+  warning_column: road_obstacle
+  bus: road_obstacle
+  tricycle: road_obstacle
+  reflective_cone: road_obstacle
+
+# 未映射的类别（不参与P0检测）
+# stop_sign: 交通标志，P1阶段处理
+
+# 补充说明
+# stairs 和 ramp 在 mangdaojianceYOLO 中不存在
+# 需要从其他数据源补充：
+# 1. Zenodo accessibility_barriers 数据集（含 stairs, ramp）
+# 2. Roboflow stairs_detection 数据集
+# 3. HuggingFace RampNet 数据集

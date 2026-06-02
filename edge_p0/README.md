@@ -38,7 +38,7 @@ LinkAble 当前版本是一套**基于边缘智能的无障碍辅助通行原型
 
 | 优先级 | 内容 | 状态 |
 |--------|------|------|
-| **P0** | blind_road_occupied, stairs, ramp, road_obstacle 检测 | 代码就绪，数据待采集 |
+| **P0** | blind_road_occupied, stairs, ramp, road_obstacle 检测 | 代码就绪，已有自采+公共融合集，待 baseline 评估 |
 | **P0** | 连续帧事件聚合与去抖 | 完成 |
 | **P0** | 模板化中文提示（<50字） | 完成 |
 | **P0** | presenter_female 本地语音播报 | 完成 |
@@ -75,10 +75,10 @@ edge_p0/
     public_p0_sources/        # 公共数据源
     public_p0_yolo/           # YOLO 格式数据集
   docs/                       # 项目文档
-    annotation_guidelines_p0.md   # P0 标注规范
     demo_route_plan.md            # A-D 点位路线
     field_capture_checklist.md    # 现场采集清单
-    p0_data_collection_plan.md    # 数据采集计划
+    demo_video_shotlist.md        # 演示视频分镜
+    mangdaojiance_integration.md  # 第三方数据集整合说明
   scripts/                    # 工具脚本
     capture_p0_frames.py      # 数据采集脚本
     check_p0_dataset.py       # 数据集检查
@@ -214,13 +214,13 @@ python -m linkable_edge.video_demo \
 
 ### 目标分布（AGENTS.md）
 
-| 类别 | 目标数量 | 当前数量 |
+| 类别 | 目标数量 | 当前状态 |
 |------|---------|---------|
-| blind_road_occupied | ~210 (35%) | 0 |
-| stairs | ~120 (20%) | 0 |
-| ramp | ~120 (20%) | 0 |
-| road_obstacle | ~150 (25%) | 0 |
-| **合计** | **>=600** | **0** |
+| blind_road_occupied | ~210 (35%) | 已进入融合集，需核验自采占比 |
+| stairs | ~120 (20%) | 已进入融合集，需核验自采占比 |
+| ramp | ~120 (20%) | 已进入融合集，需核验自采占比 |
+| road_obstacle | ~150 (25%) | 已进入融合集，数量偏多，训练需关注不平衡 |
+| **合计** | **>=600** | **已有自采+公共融合集，需补来源台账/划分记录** |
 
 ### 本周底线任务
 
@@ -232,7 +232,7 @@ python scripts/capture_p0_frames.py \
   --output datasets/linkable_p0_raw/blind_road_occupied/images
 ```
 
-即使每类只有 20 张，也要拍，证明数据采集已启动。
+下一步重点不是证明“从 0 开始”，而是把自采与公共数据的来源、类别、划分和质量问题记录清楚，确保测试集包含足够自采真实场景。
 
 ---
 
@@ -264,9 +264,8 @@ python scripts/capture_p0_frames.py \
 
 - [AGENTS.md](../agents.md) — 项目协作规范（PRD v2.2 执行版）
 - [LinkAble_PRD_v2.2.md](../LinkAble_PRD_v2.2.md) — 产品需求文档
-- [docs/plans/linkable-competition-master-checklist.md](docs/plans/linkable-competition-master-checklist.md) — 比赛总清单
-- [docs/plans/jetson-troubleshooting.md](docs/plans/jetson-troubleshooting.md) — Jetson 故障排查
-- [docs/annotation_guidelines_p0.md](docs/annotation_guidelines_p0.md) — P0 标注规范
+- [docs/plans/jetson-troubleshooting.md](../docs/plans/jetson-troubleshooting.md) — Jetson 故障排查
+- [edge_p0/docs/field_capture_checklist.md](docs/field_capture_checklist.md) — 现场采集和隐私检查清单
 
 ---
 
@@ -299,15 +298,16 @@ python scripts/capture_p0_frames.py \
 
 ### 还有哪些事情要做（当前阻塞）
 
-**数据层（致命瓶颈）：**
-- [ ] 自采真实照片：目标 >=600 张，当前 0 张
-- [ ] AI 生成图分类：342 张在 pic/ 目录，需人工分类到 4 个类别
-- [ ] 数据标注：分类后的图片需用 labelImg 画框标注
-- [ ] 数据集划分：train/val/test = 70/20/10，测试集需含 >=20% 真实照片
+**数据层（当前主线）：**
+- [ ] 数据来源台账：区分自采、购买/公共、AI 补充数据
+- [ ] 标注质量抽检：每类抽样检查框、类别映射和隐私问题
+- [ ] 数据集划分：train/val/test = 70/20/10，同一地点/场景不跨集合
+- [ ] 测试集自采占比核验：测试集需含 >=20% 自采真实场景
+- [ ] 类别不平衡处理：road_obstacle 数量偏多，优先补盲道占用、台阶、坡道
 
 **代码收尾（轻度债务）：**
 - [ ] AudioManager 接入 demo（当前仍用旧 build_audio_output()）
-- [ ] 删除 camera.py 死代码（33 行未引用）
+- [x] 删除 camera.py 死代码（CSI/USB 输入已由 `inputs.py` 统一维护）
 - [ ] A-D 点位演示脚本（创建 demo_route_campus.py 或 route config）
 
 **演示准备：**
@@ -325,25 +325,14 @@ python scripts/capture_p0_frames.py \
 
 ### 后续执行计划
 
-**本周（5.10-5.11）—— 数据破冰：**
-1. 人工分类 342 张 AI 生成图到 4 个类别目录
-2. 拿手机/相机拍摄真实场景：每类 >=20 张（底线 100 张）
-3. 标注首批 100 张图片（labelImg，生成 .txt）
-4. 运行 check_p0_dataset.py 验证数据状态
+**当前阶段（Phase 3）—— baseline 和数据台账：**
+1. 修复 P0 语义和训练脚本问题
+2. 补齐自采+公共融合集来源台账
+3. 抽检四类标注质量和类别映射
+4. 训练 P0 baseline，输出 mAP50/Recall/FPS
+5. 对比 COCO 代理 vs 自定义模型
 
-**第 1 周（5.12-5.18）—— 数据扩充：**
-1. 继续采集真实照片，目标 400+ 张
-2. 下载 Zenodo accessibility_barriers.zip 并转换
-3. 验证 Mendeley 路障数据集转换
-4. 合并 AI 补充 + 真实照片 + 公共数据
-
-**第 2 周（5.19-5.25）—— 训练 baseline：**
-1. 运行 train_yolo.py，epochs=100
-2. 输出 mAP50/Recall/FPS 指标
-3. 对比 COCO 代理 vs 自定义模型
-4. 调优（数据增强、超参数）
-
-**第 3 周（5.26-6.1）—— 演示固定：**
+**下一阶段（Phase 4）—— 演示固定：**
 1. A-D 点位实地走查，确认触发稳定
 2. 录制演示视频素材（多机位、分镜脚本）
 3. 视频剪辑（<=5 分钟，匿名审查）
@@ -365,6 +354,6 @@ python scripts/capture_p0_frames.py \
 
 ---
 
-> 最后更新：2026-05-10  
+> 最后更新：2026-05-24  
 > 对齐版本：PRD v2.2 / AGENTS.md  
-> 当前状态：代码就绪，数据待采集，距提交截止 42 天
+> 当前状态：P0 代码闭环与融合数据集已具备，正在修复 bug、核验数据台账并进入 baseline 评估

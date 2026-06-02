@@ -13,10 +13,14 @@ DIRECTION_MAP = {
 }
 
 
+def _rounded_distance_m(distance_m: float) -> int:
+    return max(1, int(round(distance_m)))
+
+
 def format_distance(distance_m: float | None) -> str:
     if distance_m is None:
         return "前方"
-    rounded = max(1, int(round(distance_m)))
+    rounded = _rounded_distance_m(distance_m)
     return f"前方{rounded}米"
 
 
@@ -27,11 +31,12 @@ def format_direction(direction: str | None) -> str:
 
 
 def format_obstacle_location(direction: str | None, distance_m: float | None = None) -> str:
-    prefix = format_distance(distance_m)
     location = format_direction(direction)
-    if not location:
-        return prefix
-    return f"{prefix}{location}"
+    if distance_m is None:
+        return location or "前方"
+    if not location or location == "前方":
+        return format_distance(distance_m)
+    return f"{location}{_rounded_distance_m(distance_m)}米"
 
 
 def render_event_text(event: DetectionEvent) -> str:
@@ -69,6 +74,7 @@ def render_event_text(event: DetectionEvent) -> str:
 
 # 全部模板文本列表，供启动时预加载 TTS 缓存
 ALL_TEMPLATE_TEXTS = [
+    # P0 四类核心模板
     "前方盲道被占用，请注意绕行。",
     "前方盲道被占用，建议向左前方绕行。",
     "前方盲道被占用，建议向右前方绕行。",

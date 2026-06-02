@@ -12,10 +12,10 @@ import numpy as np
 
 
 P0_CLASSES = {
-    0: "road_obstacle",
+    0: "blind_road_occupied",
     1: "stairs",
     2: "ramp",
-    3: "blind_road_occupied",
+    3: "road_obstacle",
 }
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 

@@ -30,15 +30,41 @@ DEFAULT_COCO_LABEL_MAP: dict[str, str] = {
     "suitcase": "road_obstacle",
 }
 
+# mangdaojianceYOLO 16类 -> P0 4类 映射
+# 说明：购买的盲道检测数据集，包含16个类别，需要映射到P0四类。
+# 其中 stairs 和 ramp 在原数据集中不存在，需要从其他数据源补充训练。
+MANGDAOJIANE_LABEL_MAP: dict[str, str] = {
+    # 直接映射 - 盲道相关
+    "blind track": "blind_road_occupied",
+    # 障碍物映射 - 所有可能阻碍通行的物体
+    "ashcan": "road_obstacle",
+    "car": "road_obstacle",
+    "bicycle": "road_obstacle",
+    "person": "road_obstacle",
+    "spherical_roadblock": "road_obstacle",
+    "pole": "road_obstacle",
+    "fire_hydrant": "road_obstacle",
+    "truck": "road_obstacle",
+    "dog": "road_obstacle",
+    "motorbike": "road_obstacle",
+    "warning_column": "road_obstacle",
+    "bus": "road_obstacle",
+    "tricycle": "road_obstacle",
+    "reflective_cone": "road_obstacle",
+    # stop_sign 不映射（P1阶段处理）
+}
+
 
 @dataclass(slots=True)
 class YoloDetectorConfig:
-    model_path: str = "yolo11n.pt"
+    model_path: str = "best.pt"
     image_size: int = 640
     confidence_threshold: float = 0.25
     device: str | int | None = None
     engine: Literal["pytorch", "onnx", "tensorrt"] = "pytorch"  # 预留后端迁移
     label_map: Mapping[str, str] = field(default_factory=lambda: dict(DEFAULT_COCO_LABEL_MAP))
+    # 模型类型：coco（COCO预训练）、mangdaojiance（购买的16类模型）、p0_custom（P0四类自定义模型）
+    model_type: Literal["coco", "mangdaojiance", "p0_custom"] = "coco"
 
 
 def normalize_label(raw_label: str, label_map: Mapping[str, str] | None = None) -> str | None:
@@ -71,6 +97,32 @@ def infer_direction_from_bbox(bbox: tuple[int, int, int, int], image_width: int)
 class YoloDetector:
     def __init__(self, config: YoloDetectorConfig | None = None) -> None:
         self.config = config or YoloDetectorConfig()
+        
+        # 根据模型类型自动选择标签映射
+        if self.config.model_type == "mangdaojiance":
+            # 使用 mangdaojianceYOLO 的类别映射
+            if not self.config.label_map or self.config.label_map == DEFAULT_COCO_LABEL_MAP:
+                self.config = YoloDetectorConfig(
+                    model_path=self.config.model_path,
+                    image_size=self.config.image_size,
+                    confidence_threshold=self.config.confidence_threshold,
+                    device=self.config.device,
+                    engine=self.config.engine,
+                    label_map=MANGDAOJIANE_LABEL_MAP,
+                    model_type=self.config.model_type,
+                )
+        elif self.config.model_type == "p0_custom":
+            # P0 自定义模型，不需要标签映射（直接输出P0四类）
+            self.config = YoloDetectorConfig(
+                model_path=self.config.model_path,
+                image_size=self.config.image_size,
+                confidence_threshold=self.config.confidence_threshold,
+                device=self.config.device,
+                engine=self.config.engine,
+                label_map={},  # 空映射，直接使用模型输出
+                model_type=self.config.model_type,
+            )
+        
         try:
             from ultralytics import YOLO  # type: ignore
         except ImportError as exc:

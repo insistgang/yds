@@ -4,6 +4,9 @@ __pycache__/
 
 # Runtime outputs and local artifacts
 runs/
+.tmp/
+pytest-cache-files-*/
+pic/
 *.mp4
 *.avi
 *.mov
@@ -27,6 +30,7 @@ datasets/linkable_p0_raw/**/*.avi
 
 # Derived YOLO datasets are reproducible from reviewed raw data and labels.
 datasets/linkable_p0_yolo/
+datasets/p0_yolo/
 
 # Public dataset downloads/conversions can be large and must be reproducible.
 datasets/public_p0_sources/raw/*

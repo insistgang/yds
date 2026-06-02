@@ -1,0 +1,30 @@
+# LinkAble P0 四类数据集配置
+# 用于训练边缘部署的轻量级YOLO模型
+
+# 数据集路径（相对于此文件）
+train: ../datasets/p0_yolo/images/train
+val: ../datasets/p0_yolo/images/val
+test: ../datasets/p0_yolo/images/test
+
+# 类别数量
+nc: 4
+
+# 类别名称（与 AGENTS.md 保持一致）
+names:
+  - blind_road_occupied  # 盲道占用
+  - stairs               # 台阶
+  - ramp                 # 坡道
+  - road_obstacle        # 路面障碍
+
+# 数据来源说明
+# 本数据集由以下来源合并：
+# 1. mangdaojianceYOLO (blind track -> blind_road_occupied, 其他障碍物 -> road_obstacle)
+# 2. Zenodo accessibility_barriers (stairs, ramp)
+# 3. Mendeley obstacles_avoidance (road_obstacle)
+# 4. 自采校园数据（已进入融合集，需补来源台账和测试集占比核验）
+
+# 类别分布目标（参考 AGENTS.md）
+# blind_road_occupied: 35% (~210张)
+# stairs: 20% (~120张)
+# ramp: 20% (~120张)
+# road_obstacle: 25% (~150张)

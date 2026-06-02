@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import importlib.util
 import sys
-import tempfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from unittest import mock
 import unittest
+import uuid
 
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "tts_minimax_test.py"
+TEST_TEMP_ROOT = Path(__file__).resolve().parents[1] / ".tmp" / "tests"
 SPEC = importlib.util.spec_from_file_location("tts_minimax_test", SCRIPT_PATH)
 tts_minimax_test = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
@@ -16,12 +19,20 @@ sys.modules[SPEC.name] = tts_minimax_test
 SPEC.loader.exec_module(tts_minimax_test)
 
 
+@contextmanager
+def temporary_directory() -> Iterator[str]:
+    TEST_TEMP_ROOT.mkdir(parents=True, exist_ok=True)
+    path = TEST_TEMP_ROOT / f"test-{uuid.uuid4().hex}"
+    path.mkdir(parents=True, exist_ok=True)
+    yield str(path)
+
+
 class MiniMaxTtsTests(unittest.TestCase):
     def test_cache_hit_skips_api_request(self) -> None:
         params = tts_minimax_test.TtsParams()
         alert = tts_minimax_test.build_alert_cases()[0]
 
-        with tempfile.TemporaryDirectory() as temp_dir:
+        with temporary_directory() as temp_dir:
             cache_dir = Path(temp_dir)
             output_path = tts_minimax_test.cache_path(cache_dir, alert.text, "female-tianmei", params)
             output_path.write_bytes(b"cached mp3")
@@ -55,7 +66,7 @@ class MiniMaxTtsTests(unittest.TestCase):
         params = tts_minimax_test.TtsParams(speed=1.15, emotion="calm")
         alert = tts_minimax_test.build_alert_cases()[1]
 
-        with tempfile.TemporaryDirectory() as temp_dir:
+        with temporary_directory() as temp_dir:
             result = tts_minimax_test.synthesize_one(
                 alert=alert,
                 voice_id="female-shaonv",
