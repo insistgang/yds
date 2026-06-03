@@ -1,9 +1,9 @@
 # LinkAble 核心文档导航
 
-> 更新日期：2026-05-24  
+> 更新日期：2026-05-24
 > 用途：给论文、PPT、展架、报名表、商业计划书和视频脚本做文案入口。
 
-## 先看这 6 个
+## 先看这 7 个
 
 | 顺序 | 文档 | 位置 | 用途 |
 |---:|---|---|---|
@@ -11,8 +11,9 @@
 | 2 | 项目总览 | `README.md` | 一页看懂项目定位、阶段、交付物 |
 | 3 | 当前 TODO | `TODO.md` | 现在真正要做什么、哪些已完成 |
 | 4 | 西门子杯适配说明 | `SIEMENS_CUP_FREE_EXPLORATION.md` | 自由探索组报名口径、产品化材料清单 |
-| 5 | 边缘端技术 README | `edge_p0/README.md` | P0 技术链路、演示命令、当前工程状态 |
-| 6 | PRD 定稿 | `LinkAble_PRD_v2.2.md` | 产品需求、目标用户、场景和功能边界 |
+| 5 | 设备选型说明 | `LinkAble_设备选型说明.md` | 解释为什么使用 Jetson / 边缘 AI 设备 |
+| 6 | 边缘端技术 README | `edge_p0/README.md` | P0 技术链路、演示命令、当前工程状态 |
+| 7 | PRD 定稿 | `LinkAble_PRD_v2.2.md` | 产品需求、目标用户、场景和功能边界 |
 
 ## 写不同材料时看哪里
 
@@ -22,6 +23,7 @@
 
 - `README.md`
 - `agents.md`
+- `LinkAble_设备选型说明.md`
 - `LinkAble_PRD_v2.2.md`
 - `SIEMENS_CUP_FREE_EXPLORATION.md`
 
@@ -43,12 +45,14 @@
 - `LinkAble_PRD_v2.2.md`
 - `docs/product/LinkAble_PRD_V2.2_深度解读.md`
 - `agents.md`
+- `LinkAble_设备选型说明.md`
 - `edge_p0/README.md`
 - `edge_p0/ARCHITECTURE.txt`
 
 写作重点：
 
 - 不把项目写成成熟导盲设备。
+- 不把 Jetson 写成炫硬件，而是写成边缘智能感知节点。
 - 强调从机动车道感知到人行无障碍空间感知的迁移。
 - 强调本地实时链路：检测、事件聚合、模板提示、播报、记录。
 - 强调数据治理价值：让隐性无障碍问题变成可量化事件。

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import glob
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -234,7 +235,7 @@ class ImageSequenceSource(FrameSource):
                 self._images.extend(self.pattern.glob(ext))
             self._images.sort()
         else:
-            self._images = sorted(Path.cwd().glob(str(self.pattern)))
+            self._images = [Path(p) for p in sorted(glob.glob(str(self.pattern)))]
         self._index = 0
         return len(self._images) > 0
 
@@ -251,6 +252,79 @@ class ImageSequenceSource(FrameSource):
     def release(self) -> None:
         self._images = []
         self._index = 0
+
+
+class FallbackFrameSource(FrameSource):
+    """FrameSource wrapper that moves to the next source when open/read fails."""
+
+    def __init__(self, candidates: list[tuple[str, FrameSource]]) -> None:
+        self._candidates = candidates
+        self._current_index = -1
+        self._current: FrameSource | None = None
+
+    @property
+    def source_id(self) -> str:
+        if self._current is None:
+            return "fallback:none"
+        return self._current.source_id
+
+    @property
+    def fps(self) -> float:
+        if self._current is None:
+            return 0.0
+        return self._current.fps
+
+    @property
+    def frame_size(self) -> tuple[int, int]:
+        if self._current is None:
+            return (0, 0)
+        return self._current.frame_size
+
+    def open(self) -> bool:
+        if self._current is not None:
+            return True
+        return self._open_next(0)
+
+    def read(self) -> tuple[bool, Any]:
+        if self._current is None and not self.open():
+            return False, None
+
+        while self._current is not None:
+            ok, frame = self._current.read()
+            if ok and frame is not None:
+                return True, frame
+
+            print(f"[WARN] source read failed, fallback from {self._current.source_id}")
+            if not self._open_next(self._current_index + 1):
+                return False, None
+
+        return False, None
+
+    def release(self) -> None:
+        if self._current is not None:
+            self._current.release()
+        self._current = None
+        self._current_index = -1
+
+    def _open_next(self, start_index: int) -> bool:
+        if self._current is not None:
+            self._current.release()
+            self._current = None
+
+        for index in range(start_index, len(self._candidates)):
+            name, source = self._candidates[index]
+            try:
+                if source.open():
+                    self._current_index = index
+                    self._current = source
+                    print(f"[INFO] Using {name} source: {source.source_id}")
+                    return True
+                print(f"[WARN] {name} source unavailable: {source.source_id}")
+            except Exception as exc:
+                print(f"[WARN] {name} source failed: {exc}")
+
+        self._current_index = -1
+        return False
 
 
 def auto_select_source(
@@ -282,14 +356,8 @@ def auto_select_source(
         priority = {"USB": 0, "CSI": 1, "VIDEO": 2, "IMAGES": 3}
     candidates.sort(key=lambda x: priority.get(x[0], 99))
 
-    for name, source in candidates:
-        try:
-            if source.open():
-                print(f"[INFO] Using {name} source: {source.source_id}")
-                return source
-            else:
-                print(f"[WARN] {name} source unavailable: {source.source_id}")
-        except Exception as exc:
-            print(f"[WARN] {name} source failed: {exc}")
+    fallback = FallbackFrameSource(candidates)
+    if fallback.open():
+        return fallback
 
     raise RuntimeError("No input source available")

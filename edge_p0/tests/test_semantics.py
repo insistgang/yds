@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import unittest
 
 from linkable_edge.models import DetectionEvent
-from linkable_edge.semantics import render_event_text
+from linkable_edge.semantics import ALL_TEMPLATE_TEXTS, render_event_text
 
 
 class SemanticsTests(unittest.TestCase):
@@ -19,7 +19,7 @@ class SemanticsTests(unittest.TestCase):
             direction=direction,
         )
 
-    def test_blind_road_message_contains_distance_and_direction(self) -> None:
+    def test_blind_road_message_uses_cached_direction_template(self) -> None:
         event = DetectionEvent(
             event_id="evt-1",
             label="blind_road_occupied",
@@ -31,8 +31,8 @@ class SemanticsTests(unittest.TestCase):
         )
 
         text = render_event_text(event)
-        self.assertIn("前方8米", text)
-        self.assertIn("右前方", text)
+        self.assertEqual(text, "前方盲道被占用，建议向右前方绕行。")
+        self.assertIn(text, ALL_TEMPLATE_TEXTS)
 
     def test_ramp_message_fallback_without_direction(self) -> None:
         event = DetectionEvent(
@@ -45,7 +45,8 @@ class SemanticsTests(unittest.TestCase):
         )
 
         text = render_event_text(event)
-        self.assertEqual(text, "前方2米有坡道。")
+        self.assertEqual(text, "前方有坡道。")
+        self.assertIn(text, ALL_TEMPLATE_TEXTS)
 
     def test_road_obstacle_without_direction_uses_front_location(self) -> None:
         text = render_event_text(self._event("road_obstacle"))
@@ -83,7 +84,27 @@ class SemanticsTests(unittest.TestCase):
         )
 
         text = render_event_text(event)
-        self.assertEqual(text, "前方2米有台阶，请减速。")
+        self.assertEqual(text, "前方有台阶，请减速。")
+        self.assertIn(text, ALL_TEMPLATE_TEXTS)
+
+    def test_all_p0_rendered_texts_are_preload_templates(self) -> None:
+        self.assertEqual(len(ALL_TEMPLATE_TEXTS), 28)
+        self.assertEqual(len(set(ALL_TEMPLATE_TEXTS)), 28)
+        self.assertTrue(all(len(text) < 50 for text in ALL_TEMPLATE_TEXTS))
+
+        directions = ("front", "left_front", "right_front", "left", "right")
+        for label in ("blind_road_occupied", "stairs", "ramp", "road_obstacle"):
+            for direction in directions:
+                with self.subTest(label=label, direction=direction):
+                    text = render_event_text(self._event(label, direction=direction))
+                    self.assertIn(text, ALL_TEMPLATE_TEXTS)
+
+        for distance_m in range(1, 9):
+            with self.subTest(label="road_obstacle", distance_m=distance_m):
+                text = render_event_text(
+                    self._event("road_obstacle", direction="front", distance_m=float(distance_m))
+                )
+                self.assertIn(text, ALL_TEMPLATE_TEXTS)
 
     def test_traffic_red_message_uses_existing_semantic_renderer(self) -> None:
         event = DetectionEvent(

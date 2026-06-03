@@ -234,9 +234,11 @@ def build_audio_output(
     if name == "pyttsx3":
         return Pyttsx3AudioOutput()
     if name == "minimax":
-        return MiniMaxAudioOutput(
-            voice_id=voice,
-            params=MiniMaxTtsParams(model=minimax_model),
+        from .audio_manager import AudioManager
+
+        return AudioManager(
+            voice=voice,
+            model=minimax_model,
             cache_dir=minimax_cache_dir,
             player=player,
         )

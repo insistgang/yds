@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from linkable_edge.detector import infer_direction_from_bbox, normalize_label
+from linkable_edge.detector import YoloDetector, YoloDetectorConfig, infer_direction_from_bbox, normalize_label
 
 
 class DetectorUtilityTests(unittest.TestCase):
@@ -20,6 +20,34 @@ class DetectorUtilityTests(unittest.TestCase):
         self.assertEqual(infer_direction_from_bbox((0, 0, 90, 90), 300), "left_front")
         self.assertEqual(infer_direction_from_bbox((105, 0, 195, 90), 300), "front")
         self.assertEqual(infer_direction_from_bbox((210, 0, 300, 90), 300), "right_front")
+
+    def test_predict_frame_returns_empty_on_empty_or_bad_frame(self) -> None:
+        class FailingModel:
+            def predict(self, **kwargs):  # type: ignore[no-untyped-def]
+                raise RuntimeError("bad frame")
+
+        detector = YoloDetector.__new__(YoloDetector)
+        detector.config = YoloDetectorConfig()
+        detector._model = FailingModel()
+
+        frame = detector.predict_frame(None, frame_id=99)
+
+        self.assertEqual(frame.frame_id, 99)
+        self.assertEqual(frame.detections, [])
+
+    def test_predict_image_returns_empty_on_bad_image(self) -> None:
+        class FailingModel:
+            def predict(self, **kwargs):  # type: ignore[no-untyped-def]
+                raise RuntimeError("bad image")
+
+        detector = YoloDetector.__new__(YoloDetector)
+        detector.config = YoloDetectorConfig()
+        detector._model = FailingModel()
+
+        frame = detector.predict_image("missing-or-corrupt.jpg", frame_id=7)
+
+        self.assertEqual(frame.frame_id, 7)
+        self.assertEqual(frame.detections, [])
 
 
 if __name__ == "__main__":

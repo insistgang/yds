@@ -12,19 +12,7 @@ from .event_builder import EventBuilder, EventBuilderConfig
 from .image_demo import parse_label_map
 from .inputs import FrameSource, VideoFileSource, ImageSequenceSource
 from .pipeline import EdgePipeline
-from .publisher import EventPublisher, HttpPublisher
-
-
-class SafePublisher(EventPublisher):
-    """Wraps a publisher to swallow network errors without breaking the local pipeline."""
-    def __init__(self, delegate: EventPublisher) -> None:
-        self._delegate = delegate
-
-    def publish(self, events):
-        try:
-            self._delegate.publish(events)
-        except Exception as exc:
-            print(f"[WARN] publish failed: {exc}", file=sys.stderr)
+from .publisher import EventPublisher, HttpPublisher, SafePublisher
 from .benchmark import BenchmarkCollector
 
 
@@ -56,7 +44,10 @@ def build_event_builder(conf: float, min_frames: int = 2, cooldown_frames: int =
 def build_publisher(publish: bool, url: str, node_id: str) -> EventPublisher | None:
     if not publish:
         return None
-    return SafePublisher(HttpPublisher(url=url, node_id=node_id))
+    return SafePublisher(
+        HttpPublisher(url=url, node_id=node_id),
+        async_publish=True,
+    )
 
 
 def run_video_demo(

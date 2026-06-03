@@ -127,12 +127,16 @@ class MiniMaxTtsTests(unittest.TestCase):
 
     def test_estimates_hd_and_turbo_paygo_cost(self) -> None:
         alerts = tts_minimax_test.build_alert_cases()
+        total_units = 0
+        for alert in alerts:
+            for char in alert.text:
+                total_units += 2 if "\u4e00" <= char <= "\u9fff" else 1
 
         turbo_cost = tts_minimax_test.estimate_paygo_cost_yuan(alerts, 4, "speech-02-turbo")
         hd_cost = tts_minimax_test.estimate_paygo_cost_yuan(alerts, 4, "speech-2.8-hd")
 
-        self.assertAlmostEqual(turbo_cost, 0.1104, places=4)
-        self.assertAlmostEqual(hd_cost, 0.1932, places=4)
+        self.assertAlmostEqual(turbo_cost, total_units * 4 / 10_000 * 2.0, places=4)
+        self.assertAlmostEqual(hd_cost, total_units * 4 / 10_000 * 3.5, places=4)
 
 
 if __name__ == "__main__":

@@ -1,29 +1,67 @@
 #!/usr/bin/env python3
 """快速性能测试 - 获取 FPS 和延迟"""
 
+from __future__ import annotations
+
 import time
 from pathlib import Path
+from typing import Any
+
 from ultralytics import YOLO
 
-# 加载模型
-model_path = Path("runs/train/p0_mangdaojiance/weights/best.pt")
-if not model_path.exists():
-    model_path = "yolo11n.pt"
-    print(f"使用默认模型: {model_path}")
-else:
-    print(f"使用训练模型: {model_path}")
 
-model = YOLO(str(model_path))
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 
-# 测试图片
-test_image = "datasets/p0_yolo/images/val/000001.jpg"  # 使用验证集第一张
-if not Path(test_image).exists():
-    # 如果不存在，使用随机噪声
+
+def pick_model_path() -> Path | str:
+    candidates = [
+        Path("runs/train/p0_mangdaojiance/weights/best.pt"),
+        Path("best.pt"),
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            print(f"使用训练模型: {candidate}")
+            return candidate
+
+    print("使用默认模型: yolo11n.pt")
+    return "yolo11n.pt"
+
+
+def pick_test_image() -> Any:
+    candidates = [
+        Path("datasets/p0_yolo/images/val"),
+        Path("datasets/p0_yolo/images/test"),
+    ]
+    for directory in candidates:
+        if not directory.exists():
+            continue
+        images = sorted(path for path in directory.iterdir() if path.suffix.lower() in IMAGE_SUFFIXES)
+        if images:
+            print(f"使用测试图片: {images[0]}")
+            return str(images[0])
+
     import numpy as np
-    test_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
-    print("使用随机噪声测试")
-else:
-    print(f"使用测试图片: {test_image}")
+
+    print("未找到验证/测试图片，使用随机噪声测试")
+    return np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
+
+
+def print_runtime_info() -> None:
+    try:
+        import torch
+
+        print(f"PyTorch: {torch.__version__}")
+        print(f"CUDA可用: {torch.cuda.is_available()}")
+        if torch.cuda.is_available():
+            print(f"CUDA设备: {torch.cuda.get_device_name(0)}")
+    except Exception as exc:
+        print(f"PyTorch环境信息读取失败: {exc}")
+
+
+model_path = pick_model_path()
+model = YOLO(str(model_path))
+test_image = pick_test_image()
+print_runtime_info()
 
 # 预热
 print("\n预热中...")

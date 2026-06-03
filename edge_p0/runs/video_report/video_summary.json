@@ -1,0 +1,325 @@
+{
+  "metadata": {
+    "generated_at": "2026-06-03T04:56:55.008062+00:00",
+    "source": "local_test_videos",
+    "videos_dir": "test_videos",
+    "video_glob": "*.mp4",
+    "model": "best.pt",
+    "detector_confidence_threshold": 0.25,
+    "event_confidence_threshold": 0.55,
+    "min_consecutive_frames": 2,
+    "cooldown_frames": 5,
+    "max_frames": null,
+    "analysis_elapsed_sec": 163.15,
+    "privacy_note": "No original video frames are stored in this JSON report."
+  },
+  "summary": {
+    "video_count": 8,
+    "total_frames": 5494,
+    "total_duration_sec": 190.89,
+    "total_detections": 8412,
+    "total_events": 604,
+    "events_by_type": {
+      "road_obstacle": 172,
+      "blind_road_occupied": 327,
+      "ramp": 5,
+      "stairs": 100
+    },
+    "events_by_type_cn": {
+      "路面障碍": 172,
+      "盲道占用": 327,
+      "坡道": 5,
+      "台阶": 100
+    },
+    "events_by_direction": {
+      "left_front": 71,
+      "right_front": 65,
+      "front": 468
+    },
+    "events_by_video": {
+      "1": 47,
+      "2": 91,
+      "3": 103,
+      "4": 72,
+      "5": 96,
+      "6": 55,
+      "7": 81,
+      "8": 59
+    },
+    "top_video": {
+      "video": "3",
+      "events": 103
+    },
+    "top_event_type": {
+      "type": "blind_road_occupied",
+      "type_cn": "盲道占用",
+      "events": 327
+    },
+    "events_per_minute": 189.84
+  },
+  "videos": [
+    {
+      "video_name": "1",
+      "video_path": "test_videos/1.mp4",
+      "fps": 29.0,
+      "frame_size": [
+        540,
+        960
+      ],
+      "total_frames": 407,
+      "duration_sec": 14.03,
+      "total_detections": 983,
+      "total_events": 47,
+      "detections_by_type": {
+        "road_obstacle": 935,
+        "blind_road_occupied": 41,
+        "ramp": 7
+      },
+      "events_by_type": {
+        "road_obstacle": 43,
+        "blind_road_occupied": 3,
+        "ramp": 1
+      },
+      "events_by_direction": {
+        "left_front": 20,
+        "right_front": 4,
+        "front": 23
+      },
+      "timeline_by_10s": {
+        "0": 36,
+        "10": 11
+      },
+      "events_per_minute": 200.93
+    },
+    {
+      "video_name": "2",
+      "video_path": "test_videos/2.mp4",
+      "fps": 29.0,
+      "frame_size": [
+        540,
+        960
+      ],
+      "total_frames": 562,
+      "duration_sec": 19.38,
+      "total_detections": 1007,
+      "total_events": 91,
+      "detections_by_type": {
+        "blind_road_occupied": 773,
+        "road_obstacle": 234
+      },
+      "events_by_type": {
+        "blind_road_occupied": 85,
+        "road_obstacle": 6
+      },
+      "events_by_direction": {
+        "front": 75,
+        "right_front": 11,
+        "left_front": 5
+      },
+      "timeline_by_10s": {
+        "0": 46,
+        "10": 45
+      },
+      "events_per_minute": 281.74
+    },
+    {
+      "video_name": "3",
+      "video_path": "test_videos/3.mp4",
+      "fps": 29.0,
+      "frame_size": [
+        540,
+        960
+      ],
+      "total_frames": 550,
+      "duration_sec": 18.97,
+      "total_detections": 817,
+      "total_events": 103,
+      "detections_by_type": {
+        "blind_road_occupied": 463,
+        "road_obstacle": 354
+      },
+      "events_by_type": {
+        "blind_road_occupied": 83,
+        "road_obstacle": 20
+      },
+      "events_by_direction": {
+        "front": 80,
+        "right_front": 9,
+        "left_front": 14
+      },
+      "timeline_by_10s": {
+        "0": 47,
+        "10": 56
+      },
+      "events_per_minute": 325.85
+    },
+    {
+      "video_name": "4",
+      "video_path": "test_videos/4.mp4",
+      "fps": 29.0,
+      "frame_size": [
+        540,
+        960
+      ],
+      "total_frames": 727,
+      "duration_sec": 25.07,
+      "total_detections": 1708,
+      "total_events": 72,
+      "detections_by_type": {
+        "road_obstacle": 1674,
+        "blind_road_occupied": 34
+      },
+      "events_by_type": {
+        "road_obstacle": 68,
+        "blind_road_occupied": 4
+      },
+      "events_by_direction": {
+        "right_front": 30,
+        "front": 38,
+        "left_front": 4
+      },
+      "timeline_by_10s": {
+        "0": 54,
+        "10": 9,
+        "20": 9
+      },
+      "events_per_minute": 172.32
+    },
+    {
+      "video_name": "5",
+      "video_path": "test_videos/5.mp4",
+      "fps": 28.0,
+      "frame_size": [
+        540,
+        960
+      ],
+      "total_frames": 1173,
+      "duration_sec": 41.89,
+      "total_detections": 1385,
+      "total_events": 96,
+      "detections_by_type": {
+        "stairs": 791,
+        "road_obstacle": 260,
+        "blind_road_occupied": 334
+      },
+      "events_by_type": {
+        "stairs": 73,
+        "road_obstacle": 9,
+        "blind_road_occupied": 14
+      },
+      "events_by_direction": {
+        "front": 91,
+        "left_front": 2,
+        "right_front": 3
+      },
+      "timeline_by_10s": {
+        "0": 16,
+        "10": 20,
+        "20": 27,
+        "30": 33
+      },
+      "events_per_minute": 137.49
+    },
+    {
+      "video_name": "6",
+      "video_path": "test_videos/6.mp4",
+      "fps": 29.0,
+      "frame_size": [
+        540,
+        960
+      ],
+      "total_frames": 571,
+      "duration_sec": 19.69,
+      "total_detections": 1205,
+      "total_events": 55,
+      "detections_by_type": {
+        "blind_road_occupied": 428,
+        "road_obstacle": 774,
+        "ramp": 3
+      },
+      "events_by_type": {
+        "blind_road_occupied": 33,
+        "road_obstacle": 22
+      },
+      "events_by_direction": {
+        "front": 42,
+        "right_front": 8,
+        "left_front": 5
+      },
+      "timeline_by_10s": {
+        "0": 36,
+        "10": 19
+      },
+      "events_per_minute": 167.6
+    },
+    {
+      "video_name": "7",
+      "video_path": "test_videos/7.mp4",
+      "fps": 29.0,
+      "frame_size": [
+        540,
+        960
+      ],
+      "total_frames": 482,
+      "duration_sec": 16.62,
+      "total_detections": 624,
+      "total_events": 81,
+      "detections_by_type": {
+        "blind_road_occupied": 494,
+        "ramp": 1,
+        "stairs": 37,
+        "road_obstacle": 92
+      },
+      "events_by_type": {
+        "blind_road_occupied": 76,
+        "stairs": 3,
+        "road_obstacle": 2
+      },
+      "events_by_direction": {
+        "front": 79,
+        "left_front": 2
+      },
+      "timeline_by_10s": {
+        "0": 52,
+        "10": 29
+      },
+      "events_per_minute": 292.41
+    },
+    {
+      "video_name": "8",
+      "video_path": "test_videos/8.mp4",
+      "fps": 29.0,
+      "frame_size": [
+        540,
+        960
+      ],
+      "total_frames": 1022,
+      "duration_sec": 35.24,
+      "total_detections": 683,
+      "total_events": 59,
+      "detections_by_type": {
+        "stairs": 331,
+        "ramp": 47,
+        "blind_road_occupied": 261,
+        "road_obstacle": 44
+      },
+      "events_by_type": {
+        "stairs": 24,
+        "ramp": 4,
+        "road_obstacle": 2,
+        "blind_road_occupied": 29
+      },
+      "events_by_direction": {
+        "front": 40,
+        "left_front": 19
+      },
+      "timeline_by_10s": {
+        "0": 9,
+        "10": 10,
+        "20": 18,
+        "30": 22
+      },
+      "events_per_minute": 100.45
+    }
+  ]
+}

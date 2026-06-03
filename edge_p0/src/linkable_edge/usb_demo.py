@@ -6,15 +6,14 @@ from pathlib import Path
 import subprocess
 import sys
 import time
-from typing import Any, Callable, Iterable
+from typing import Any, Callable
 
 from .audio import DEFAULT_MINIMAX_VOICE, AudioOutput, build_audio_output
 from .detector import DEFAULT_COCO_LABEL_MAP, YoloDetector, YoloDetectorConfig
 from .event_builder import EventBuilder, EventBuilderConfig
 from .image_demo import parse_label_map
-from .models import DetectionEvent
 from .pipeline import EdgePipeline
-from .publisher import EventPublisher, HttpPublisher
+from .publisher import EventPublisher, HttpPublisher, SafePublisher
 
 
 USB_DEVICE_IDX = 0
@@ -53,17 +52,6 @@ class UsbDemoStats:
     events: int = 0
     speeches: int = 0
     saved_frames: int = 0
-
-
-@dataclass(slots=True)
-class SafePublisher(EventPublisher):
-    delegate: EventPublisher
-
-    def publish(self, events: Iterable[DetectionEvent]) -> None:
-        try:
-            self.delegate.publish(events)
-        except Exception as exc:
-            print(f"[WARN] publish failed: {exc}", file=sys.stderr)
 
 
 def configure_v4l2_dynamic_framerate(device_idx: int) -> bool:
@@ -158,7 +146,10 @@ def build_event_builder(config: UsbDemoConfig) -> EventBuilder:
 def build_publisher(config: UsbDemoConfig) -> EventPublisher | None:
     if not config.publish:
         return None
-    return SafePublisher(HttpPublisher(url=config.publish_url, node_id=config.node_id))
+    return SafePublisher(
+        HttpPublisher(url=config.publish_url, node_id=config.node_id),
+        async_publish=True,
+    )
 
 
 def save_original_frame(frame: Any, frame_id: int, capture_dir: Path, cv2_module: Any) -> bool:
