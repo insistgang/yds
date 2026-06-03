@@ -1,9 +1,9 @@
 # LinkAble 核心文档导航
 
-> 更新日期：2026-05-24
+> 更新日期：2026-06-03
 > 用途：给论文、PPT、展架、报名表、商业计划书和视频脚本做文案入口。
 
-## 先看这 7 个
+## 先看这 8 个
 
 | 顺序 | 文档 | 位置 | 用途 |
 |---:|---|---|---|
@@ -11,9 +11,10 @@
 | 2 | 项目总览 | `README.md` | 一页看懂项目定位、阶段、交付物 |
 | 3 | 当前 TODO | `TODO.md` | 现在真正要做什么、哪些已完成 |
 | 4 | 西门子杯适配说明 | `SIEMENS_CUP_FREE_EXPLORATION.md` | 自由探索组报名口径、产品化材料清单 |
-| 5 | 设备选型说明 | `LinkAble_设备选型说明.md` | 解释为什么使用 Jetson / 边缘 AI 设备 |
-| 6 | 边缘端技术 README | `edge_p0/README.md` | P0 技术链路、演示命令、当前工程状态 |
-| 7 | PRD 定稿 | `LinkAble_PRD_v2.2.md` | 产品需求、目标用户、场景和功能边界 |
+| 5 | 量化指标与创新点总结 | `LinkAble_量化指标与创新点总结.md` | 答辩主线、可引用数字、不能夸大的边界 |
+| 6 | 设备选型说明 | `LinkAble_设备选型说明.md` | 解释为什么使用 Jetson / 边缘 AI 设备 |
+| 7 | 边缘端技术 README | `edge_p0/README.md` | P0 技术链路、演示命令、当前工程状态 |
+| 8 | PRD 定稿 | `LinkAble_PRD_v2.2.md` | 产品需求、目标用户、场景和功能边界 |
 
 ## 写不同材料时看哪里
 
@@ -78,6 +79,7 @@
 
 - `README.md`
 - `TODO.md`
+- `LinkAble_量化指标与创新点总结.md`
 - `edge_p0/docs/demo_route_plan.md`
 - `edge_p0/docs/demo_video_shotlist.md`
 
@@ -105,7 +107,7 @@
 - 系统流程图
 - P0 四类识别场景
 - 演示路线 A-D 点位
-- 核心指标：FPS、延迟、mAP/Recall（等 baseline 出来后填写）
+- 核心指标：FPS、延迟、mAP/Recall、EventBuilder 消融、结构化事件数
 - 应用价值：辅助通行 + 数据治理
 
 ### 演示视频脚本
@@ -130,6 +132,7 @@
 优先看：
 
 - `edge_p0/configs/p0_data.yaml`
+- `LinkAble_量化指标与创新点总结.md`
 - `docs/evaluation/DATA_SOURCE_LEDGER.md`
 - `docs/evaluation/PERFORMANCE_METRICS.md`
 - `edge_p0/docs/mangdaojiance_integration.md`
